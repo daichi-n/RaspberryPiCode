@@ -13,7 +13,7 @@ def main():
 
         changeSw.update()
 
-        print("PinStatus : " + changeSw.getPinStatus())
+        print("PinStatus : " + str(changeSw.getPinStatus()))
 
         #少し待つ
         time.sleep(1)

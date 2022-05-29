@@ -15,7 +15,7 @@ class GpioSwitch():
 
     def update(self):
         #スイッチ状態更新
-        sw_status = GPIO.input(self.m_inputPin)
+        self.m_inputPin = GPIO.input(self.m_inputPin)
 
     def getPinStatus(self):
         #スイッチ状態取得
