@@ -10,9 +10,9 @@ SW_OFF = 1
 class GpioSwitch():
 
     m_chageSwPin = CHANGE_BUTTON_PIN
-    m_chageSwStatus = EXIT_BUTTON_PIN
+    m_chageSwStatus = 0
 
-    m_exitSwPin = 0
+    m_exitSwPin = EXIT_BUTTON_PIN
     m_exitSwStatus = 0
 
     def __init__(self):
