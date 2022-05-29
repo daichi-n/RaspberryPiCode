@@ -5,7 +5,7 @@ import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 
 
-PIN_PORT = 18
+PIN_PORT = 26
 
 #GPIO18を入力端子設定
 GPIO.setup(PIN_PORT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
