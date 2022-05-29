@@ -34,7 +34,7 @@ StepPins = [5,6,13,19]
 
 # Set all pins as output
 for pin in StepPins:
-  print "Setup pins"
+  print("Setup pins")
   GPIO.setup(pin,GPIO.OUT)
   GPIO.output(pin, False)
 
@@ -64,14 +64,13 @@ StepCounter = 0
 
 # Start main loop
 while True:
-
-  print StepCounter,
-  print Seq[StepCounter]
+  print ("StepCounter : " + str(StepCounter))
+  print ("Seq : " + str(Seq[StepCounter]))
 
   for pin in range(0, 4):
     xpin = StepPins[pin]
     if Seq[StepCounter][pin]!=0:
-      print " Enable GPIO %i" %(xpin)
+      print(" Enable GPIO %i" %(xpin))
       GPIO.output(xpin, True)
     else:
       GPIO.output(xpin, False)
