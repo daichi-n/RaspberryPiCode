@@ -2,13 +2,9 @@ from swctrl import gpioSwitch
 import time
 import sys
 
-# ボタン
-CHANGE_BUTTON_PIN = 26
-EXIT_BUTTON_PIN = 4
-
 def main():
 
-    sw = gpioSwitch.GpioSwitch(CHANGE_BUTTON_PIN, EXIT_BUTTON_PIN)
+    sw = gpioSwitch.GpioSwitch()
 
     while True:
 

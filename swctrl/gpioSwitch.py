@@ -1,21 +1,21 @@
-
-#GPIOの初期設定
 import RPi.GPIO as GPIO
 
+# PIN配
+CHANGE_BUTTON_PIN = 26
+EXIT_BUTTON_PIN = 4
+# 入力値判定
 SW_ON = 0
 SW_OFF = 1
 
 class GpioSwitch():
 
-    m_chageSwPin = 0
+    m_chageSwPin = CHANGE_BUTTON_PIN
+    m_chageSwStatus = EXIT_BUTTON_PIN
+
     m_exitSwPin = 0
-    m_chageSwStatus = 0
     m_exitSwStatus = 0
 
-    def __init__(self, chageSwPin, exitSwPin):
-        self.m_chageSwPin = chageSwPin
-        self.m_exitSwPin = exitSwPin
-
+    def __init__(self):
         # 初期化
         GPIO.setmode(GPIO.BCM)
         #入力端子設定
