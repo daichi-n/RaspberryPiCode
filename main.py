@@ -1,4 +1,3 @@
-from matplotlib.pyplot import flag
 from swctrl import gpioSwitch
 from stepperMoter import stepperMoter
 import time
