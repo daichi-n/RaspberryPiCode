@@ -1,88 +1,82 @@
-#!/usr/bin/python
-#--------------------------------------
-#    ___  ___  _ ____          
-#   / _ \/ _ \(_) __/__  __ __ 
-#  / , _/ ___/ /\ \/ _ \/ // / 
-# /_/|_/_/  /_/___/ .__/\_, /  
-#                /_/   /___/   
-#
-#    Stepper Motor Test
-#
-# A simple script to control
-# a stepper motor.
-#
-# Author : Matt Hawkins
-# Date   : 28/09/2015
-#
-# http://www.raspberrypi-spy.co.uk/
-#
-#--------------------------------------
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-# Import required libraries
-import sys
-import time
 import RPi.GPIO as GPIO
+from time import sleep
 
-# Use BCM GPIO references
-# instead of physical pin numbers
-GPIO.setmode(GPIO.BCM)
+class C28BYJ48:
+    """コンストラクタ"""
+    def __init__(self, IN1, IN2, IN3, IN4):
+        #Setting GPIO
+        GPIO.setmode(GPIO.BCM)
+        self.mPin = [IN1, IN2, IN3, IN4]     #GPIO Number
+        for pin in range(0, 4):
+            GPIO.setup(self.mPin[pin], GPIO.OUT)
 
-# Define GPIO signals to use
-# Physical pins 11,15,16,18
-# GPIO17,GPIO22,GPIO23,GPIO24
-StepPins = [5,6,13,19]
+        #Setting related Sequence
+        #1step angle = 1/4096[deg]
+        self.mNSeq = 0      #Sequence number from 0 to 7
+        self.mSeq = [[1,0,0,1],[1,0,0,0],[1,1,0,0],[0,1,0,0],[0,1,1,0],[0,0,1,0],[0,0,1,1],[0,0,0,1]]
 
-# Set all pins as output
-for pin in StepPins:
-  print("Setup pins")
-  GPIO.setup(pin,GPIO.OUT)
-  GPIO.output(pin, False)
+        #default speed = max speed
+        self.SetWaitTime(0.001)
 
-# Define advanced sequence
-# as shown in manufacturers datasheet
-Seq = [[1,0,0,1],
-       [1,0,0,0],
-       [1,1,0,0],
-       [0,1,0,0],
-       [0,1,1,0],
-       [0,0,1,0],
-       [0,0,1,1],
-       [0,0,0,1]]
-       
-StepCount = len(Seq)
-StepDir = 1 # Set to 1 or 2 for clockwise
-            # Set to -1 or -2 for anti-clockwise
+    """ピンのHigh or Lowを設定する"""
+    def SetPinsVoltage(self, NSeq):
+        self.mNSeq = NSeq
+        for pin in range(0, 4):
+            if self.mSeq[self.mNSeq][pin]!=0:
+                GPIO.output(self.mPin[pin],GPIO.HIGH)
+            else:
+                GPIO.output(self.mPin[pin],GPIO.LOW)
 
-# Read wait time from command line
-if len(sys.argv)>1:
-  WaitTime = int(sys.argv[1])/float(1000)
-else:
-  WaitTime = 10/float(1000)
+    """ウエイト時間を設定する"""
+    def SetWaitTime(self, wait):
+        if wait < 0.001:
+            self.mStep_wait = 0.001
+        elif wait > 0.1:
+            self.mStep_wait = 0.1
+        else:
+            self.mStep_wait = wait
 
-# Initialise variables
-StepCounter = 0
+    """CWに1Step移動する"""
+    def Step_CW(self, step, wait):
+        self.SetWaitTime(wait)
+        for i in range(0, step):
+            if self.mNSeq >= 7:
+                self.SetPinsVoltage(0)
+            else:
+                self.SetPinsVoltage(self.mNSeq+1)
+            sleep(self.mStep_wait)
 
-# Start main loop
-while True:
-  print ("StepCounter : " + str(StepCounter))
-  print ("Seq : " + str(Seq[StepCounter]))
+    """CCWに1Step移動する"""
+    def Step_CCW(self, step, wait):
+        self.SetWaitTime(wait)
+        for i in range(0, step):
+            if self.mNSeq <= 0:
+                self.SetPinsVoltage(7)
+            else:
+                self.SetPinsVoltage(self.mNSeq-1)
+            sleep(self.mStep_wait)
 
-  for pin in range(0, 4):
-    xpin = StepPins[pin]
-    if Seq[StepCounter][pin]!=0:
-      print(" Enable GPIO %i" %(xpin))
-      GPIO.output(xpin, True)
-    else:
-      GPIO.output(xpin, False)
+    """終了処理"""
+    def Cleanup(self):
+        GPIO.cleanup()
 
-  StepCounter += StepDir
+"""メイン関数"""
+if __name__ == '__main__':
+    StepMoter = C28BYJ48(IN1=4, IN2=17, IN3=27, IN4=22)
+    #Main loop
+    try:
+        while True:
+            StepMoter.Step_CW(4096,0.001)
+            sleep(0.5)
+            StepMoter.Step_CCW(4096,0.001)
+            sleep(0.5)
 
-  # If we reach the end of the sequence
-  # start again
-  if (StepCounter>=StepCount):
-    StepCounter = 0
-  if (StepCounter<0):
-    StepCounter = StepCount+StepDir
-
-  # Wait before moving on
-  time.sleep(WaitTime)
+    except KeyboardInterrupt  :         #Ctl+Cが押されたらループを終了
+        print("\nCtl+C")
+    except Exception as e:
+        print(str(e))
+    finally:
+        StepMoter.Cleanup()

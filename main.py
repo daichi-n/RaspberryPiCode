@@ -1,20 +1,35 @@
+from matplotlib.pyplot import flag
 from swctrl import gpioSwitch
+from stepperMoter import stepperMoter
 import time
 import sys
 
 def main():
 
     sw = gpioSwitch.GpioSwitch()
+    StepMoter = stepperMoter.C28BYJ48(IN1=5, IN2=6, IN3=13, IN4=19)
+
+    flag = False
 
     while True:
 
         sw.update()
 
-        print("PinStatus : " + str(sw.getChangeSwStatus()))
+        sw_status = sw.getChangeSwStatus()
 
-        if sw.getExitSwStatus() == gpioSwitch.SW_ON:
+        print("PinStatus : " + str(sw_status))
+
+        if sw.getExitSwStatus() == gpioSwitch.SW_ON :
             print("Exit Application.")
             return
+
+        if sw_status == gpioSwitch.SW_ON :
+            if flag :
+                StepMoter.Step_CW(4096,0.001)
+                flag = False
+            else :
+                StepMoter.Step_CCW(4096,0.001)
+                flag = True
 
         #少し待つ
         time.sleep(1)
