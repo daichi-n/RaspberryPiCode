@@ -36,6 +36,8 @@ def main():
 if __name__ == '__main__':
     try:
         main()
+    except Exception as ex:
+        print(f"Unexpected {ex}, {type(ex)}")
     except:
         print("Exception Occured!!")
         print(sys.exc_info())
