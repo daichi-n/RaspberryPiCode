@@ -8,6 +8,7 @@ def main():
 
     sw = gpioSwitch.GpioSwitch()
     StepMoter = stepperMoter.C28BYJ48(IN1=5, IN2=6, IN3=13, IN4=19)
+    length_mon = length.LengthMonitor()
 
     flag = False
 
@@ -31,7 +32,7 @@ def main():
                 StepMoter.Step_CCW(4096,0.001)
                 flag = True
 
-        distance = length.mesure()
+        distance = length_mon.mesure()
         print ( "Discance : {:.1f} cm".format( distance ) )
 
         #少し待つ

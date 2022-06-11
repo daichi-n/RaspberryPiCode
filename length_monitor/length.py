@@ -1,4 +1,5 @@
-import time, pigpio
+import time
+import RPi.GPIO as GPIO
 
 TEMP = 20
 
@@ -7,31 +8,36 @@ ECHO_PIN = 24
 
 s_speed = 331.5 + 0.6 * TEMP
 
-pi = pigpio.pi()
-
-pi.set_mode( TRIG_PIN, pigpio.INPUT )
-pi.set_mode( ECHO_PIN, pigpio.INPUT )
-pi.set_pull_up_down( ECHO_PIN, pigpio.PUD_OFF )
-
-pi.write( TRIG_PIN, pigpio.LOW )
-time.sleep( 1 )
-
-def mesure():
-    pi.write( TRIG_PIN, pigpio.HIGH )
-    time.sleep(0.00001)
-    pi.write( TRIG_PIN, pigpio.LOW )
-
-    while ( pi.read( ECHO_PIN ) == pigpio.LOW ):
-        sigoff = time.time()
-    while ( pi.read( ECHO_PIN ) == pigpio.HIGH ):
-        sigon = time.time()
+class LengthMonitor():
     
-    dist = ( sigon - sigoff ) * s_speed / 2 * 100
-    return dist
+    def __init__(self):
+        GPIO.setmode(GPIO.BCM)
 
+        GPIO.setup( TRIG_PIN, GPIO.OUT)
+        GPIO.setup( ECHO_PIN, GPIO.IN)
+        
+        time.sleep( 1 )
+
+    def __del__(self):
+        GPIO.cleanup()
+
+    def mesure():
+        GPIO.output(TRIG_PIN,GPIO.HIGH)
+        time.sleep(0.00001)
+        GPIO.output(TRIG_PIN,GPIO.LOW)
+
+        while ( GPIO.input( ECHO_PIN ) == GPIO.LOW ):
+            sigoff = time.time()
+        while ( GPIO.input( ECHO_PIN ) == GPIO.HIGH ):
+            sigon = time.time()
+        
+        dist = ( sigon - sigoff ) * s_speed / 2 * 100
+        return dist
+        
 def main():
+    monitor = LengthMonitor() 
     while True:
-        distance = mesure()
+        distance = monitor.mesure()
         print ( "Discance : {:.1f} cm".format( distance ) )
         time.sleep( 1 )
 
