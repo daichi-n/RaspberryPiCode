@@ -1,5 +1,6 @@
 from swctrl import gpioSwitch
 from stepperMoter import stepperMoter
+import length_monitor
 import time
 import sys
 
@@ -29,6 +30,9 @@ def main():
             else :
                 StepMoter.Step_CCW(4096,0.001)
                 flag = True
+
+        distance = length_monitor.mesure()
+        print ( "Discance : {:.1f} cm".format( distance ) )
 
         #少し待つ
         time.sleep(1)
