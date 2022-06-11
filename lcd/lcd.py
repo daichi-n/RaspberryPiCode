@@ -88,8 +88,8 @@ def main():
   while True:
 
     # Send some test
-    lcd_string("Created by         <",LCD_LINE_1)
-    lcd_string("Osoyoo.com        <",LCD_LINE_2)
+    lcd_string("Created by  <",LCD_LINE_1)
+    lcd_string("Osoyoo.com  <",LCD_LINE_2)
 
     time.sleep(3)
   
