@@ -21,7 +21,7 @@ class LengthMonitor():
     def __del__(self):
         GPIO.cleanup()
 
-    def mesure():
+    def mesure(self):
         GPIO.output(TRIG_PIN,GPIO.HIGH)
         time.sleep(0.00001)
         GPIO.output(TRIG_PIN,GPIO.LOW)
